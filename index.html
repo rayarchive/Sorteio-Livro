@@ -27,25 +27,24 @@
             align-items: center;
             background: transparent; 
             font-family: 'Georgia', serif;
-            overflow: hidden; /* Importante para não bugar o scroll do Notion */
+            overflow: hidden;
         }
 
-        /* Container principal que gerencia a escala */
+        /* Container que gerencia o zoom */
         #scaleWrapper {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 500px; /* Largura base fixa para o cálculo */
-            height: 500px; /* Altura base fixa para o cálculo */
+            width: 400px; /* Reduzi a largura base para diminuir as bordas laterais */
+            height: 500px;
             transform-origin: center center;
-            transition: transform 0.2s ease-out;
-            will-change: transform;
+            transition: transform 0.1s ease-out;
         }
 
         .viewport {
             width: 100%;
             height: 100%;
-            perspective: 1500px;
+            perspective: 1200px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -58,14 +57,14 @@
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: rotateY(-20deg);
+            transform: rotateY(-15deg); /* Rotação inicial mais leve */
         }
 
+        /* Quando abre, ele translada menos para não bater na borda */
         .book.open {
-            transform: rotateY(0deg) translateX(55px);
+            transform: rotateY(0deg) translateX(30px); 
         }
 
-        /* --- LOMBADA --- */
         .spine {
             position: absolute;
             left: -24px; top: 0;
@@ -78,10 +77,9 @@
             box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
         }
 
-        /* --- CONTRACAPA --- */
         .book-back {
             position: absolute;
-            width: 104.5%;
+            width: 100%;
             height: 100%;
             background: var(--capa-base);
             background-image: var(--leather-tex);
@@ -89,7 +87,6 @@
             transform: translateZ(-10px); 
         }
 
-        /* --- CAPA FRONTAL --- */
         .cover {
             position: absolute;
             width: 100%; height: 100%;
@@ -104,7 +101,7 @@
         }
 
         .book.open .cover {
-            transform: rotateY(-155deg);
+            transform: rotateY(-145deg); /* Abre um pouco menos para caber na tela */
             transition-delay: 0s; 
         }
 
@@ -118,7 +115,6 @@
             justify-content: center;
             align-items: flex-start;
             backface-visibility: hidden;
-            z-index: 2;
             box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), inset -2px -2px 5px rgba(0,0,0,0.5);
         }
 
@@ -132,62 +128,43 @@
 
         .corner-ornament {
             position: absolute;
-            width: 70px; 
-            height: 70px;
+            width: 60px; height: 60px;
             background-image: var(--corner-url);
             background-size: contain;
             background-repeat: no-repeat;
             pointer-events: none;
-            z-index: 10;
             filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.8)) brightness(1.2);
         }
         .co-tr { top: -1px; right: -1px; transform: rotate(90deg); }
         .co-br { bottom: -1px; right: -1px; transform: rotate(90deg) scaleX(-1); }
 
         .cover-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 70%;
-            margin-left: 15px;
-            margin-top: 50px;
+            display: flex; flex-direction: column; align-items: center;
+            width: 70%; margin-left: 15px; margin-top: 50px;
         }
 
         .front-face-art h1 {
             font-family: 'UnifrakturMaguntia', cursive;
-            color: var(--prata);
-            font-size: 1.7rem;
-            text-align: center;
-            font-weight: normal;
-            margin: 15px 0;
-            line-height: 1.1;
+            color: var(--prata); font-size: 1.6rem; text-align: center;
+            margin: 15px 0; line-height: 1.1;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
         }
 
         .divider {
-            width: 160px; height: 20px;
+            width: 140px; height: 15px;
             background-image: url('https://i.imgur.com/F0LHG3G.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: brightness(1.2) grayscale(1);
-            opacity: 0.9;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+            filter: brightness(1.2) grayscale(1); opacity: 0.9;
         }
-        .divider-bottom { transform: scaleY(-1); margin-top: -5px; }
-        .divider-top { margin-bottom: -5px; }
+        .divider-bottom { transform: scaleY(-1); }
 
         /* --- PÁGINAS --- */
         .turning-page {
-            position: absolute;
-            width: 250px; height: 350px;
-            top: 5px; left: 5px;
-            background: var(--papel);
-            transform-origin: left;
-            transition: transform 1.2s cubic-bezier(0.15, 0, 0.15, 1);
-            border-radius: 0 4px 4px 0;
-            transform-style: preserve-3d;
+            position: absolute; width: 250px; height: 350px;
+            top: 5px; left: 5px; background: var(--papel);
+            transform-origin: left; transition: transform 1.2s cubic-bezier(0.15, 0, 0.15, 1);
+            border-radius: 0 4px 4px 0; transform-style: preserve-3d;
         }
-
         .p1 { transition-delay: 0.6s; z-index: 40; }
         .p2 { transition-delay: 0.5s; z-index: 39; }
         .p3 { transition-delay: 0.4s; z-index: 38; }
@@ -195,60 +172,40 @@
         .p5 { transition-delay: 0.2s; z-index: 36; }
         .p6 { transition-delay: 0.1s; z-index: 35; }
 
-        .book.open .p1 { transform: rotateY(-150deg); transition-delay: 0.1s; }
-        .book.open .p2 { transform: rotateY(-147deg); transition-delay: 0.2s; }
-        .book.open .p3 { transform: rotateY(-144deg); transition-delay: 0.3s; }
-        .book.open .p4 { transform: rotateY(-141deg); transition-delay: 0.4s; }
-        .book.open .p5 { transform: rotateY(-138deg); transition-delay: 0.5s; }
-        .book.open .p6 { transform: rotateY(-135deg); transition-delay: 0.6s; }
+        .book.open .p1 { transform: rotateY(-140deg); transition-delay: 0.1s; }
+        .book.open .p2 { transform: rotateY(-138deg); transition-delay: 0.2s; }
+        .book.open .p3 { transform: rotateY(-136deg); transition-delay: 0.3s; }
+        .book.open .p4 { transform: rotateY(-134deg); transition-delay: 0.4s; }
+        .book.open .p5 { transform: rotateY(-132deg); transition-delay: 0.5s; }
+        .book.open .p6 { transform: rotateY(-130deg); transition-delay: 0.6s; }
 
-        /* --- PÁGINA FIXA (Direita) --- */
         .right-stack {
-            position: absolute;
-            width: 250px; height: 350px;
-            top: 5px; left: 5px;
-            background: var(--papel);
-            border-radius: 0 4px 4px 0;
-            z-index: 10;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            padding: 30px 25px 30px 45px;
-            box-sizing: border-box;
-            text-align: center;
-            box-shadow: 
-                1px 0 0 #d1c9b8, 2px 0 0 #fdf6e3, 
-                3px 0 0 #d1c9b8, 4px 0 0 #fdf6e3,
-                5px 0 0 #d1c9b8, 6px 0 0 #fdf6e3, 
-                7px 0 0 #d1c9b8, 8px 0 0 #fdf6e3,
-                9px 0 0 #d1c9b8, 10px 0 0 #fdf6e3, 
-                11px 0 0 #d1c9b8, 12px 0 15px rgba(0,0,0,0.3);
+            position: absolute; width: 250px; height: 350px;
+            top: 5px; left: 5px; background: var(--papel);
+            border-radius: 0 4px 4px 0; z-index: 10;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 25px; box-sizing: border-box; text-align: center;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
         }
 
-        /* --- FITA --- */
         .ribbon-container {
-            position: absolute;
-            top: 4px; left: 15px;
-            width: 14px; height: 380px; 
-            overflow: hidden;
-            z-index: 60;
-            pointer-events: none;
+            position: absolute; top: 4px; left: 15px;
+            width: 14px; height: 380px; overflow: hidden;
+            z-index: 60; pointer-events: none;
         }
         .ribbon {
             position: absolute; top: -380px; left: 0;
-            width: 100%; height: 100%;
-            background: var(--fita);
+            width: 100%; height: 100%; background: var(--fita);
             box-shadow: 1px 1px 4px rgba(0,0,0,0.3);
-            transition: top 0.6s ease;
-            pointer-events: auto; cursor: grab;
+            transition: top 0.6s ease; pointer-events: auto; cursor: grab;
             clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 97%, 0 100%);
         }
         .book.open .ribbon { top: 0; }
         .ribbon.pulling { cursor: grabbing; transition: none; }
 
-        /* TEXTO INTERNO */
-        #obra-titulo { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: #111; }
-        #obra-sinopse { font-size: 0.85rem; color: #444; font-style: italic; line-height: 1.4; }
-        #obra-link { margin-top: 15px; color: var(--fita); text-decoration: none; font-weight: bold; border-bottom: 1px solid; font-size: 0.85rem; display: inline-block; cursor: pointer;}
+        #obra-titulo { font-weight: bold; font-size: 1rem; margin-bottom: 5px; color: #111; }
+        #obra-sinopse { font-size: 0.8rem; color: #444; font-style: italic; line-height: 1.3; }
+        #obra-link { margin-top: 10px; color: var(--fita); text-decoration: none; font-weight: bold; font-size: 0.8rem; border-bottom: 1px solid; }
     </style>
 </head>
 <body>
@@ -258,13 +215,11 @@
         <div class="book" id="book">
             <div class="spine"></div>
             <div class="book-back"></div>
-
             <div class="cover" onclick="toggleBook()">
                 <div class="front-face-art">
                     <div class="spine-groove"></div>
                     <div class="corner-ornament co-tr"></div>
                     <div class="corner-ornament co-br"></div>
-                    
                     <div class="cover-content">
                         <div class="divider divider-top"></div>
                         <h1>Mana i entulë<br>nómë?</h1>
@@ -272,20 +227,17 @@
                     </div>
                 </div>
             </div>
-
             <div class="turning-page p1" onclick="closeBook()"></div>
             <div class="turning-page p2" onclick="closeBook()"></div>
             <div class="turning-page p3" onclick="closeBook()"></div>
             <div class="turning-page p4" onclick="closeBook()"></div>
             <div class="turning-page p5" onclick="closeBook()"></div>
             <div class="turning-page p6" onclick="closeBook()"></div>
-
             <div class="right-stack">
                 <div id="obra-titulo"></div>
                 <div id="obra-sinopse"></div>
                 <a id="obra-link" target="_blank">Ler Obra →</a>
             </div>
-
             <div class="ribbon-container">
                 <div class="ribbon" id="ribbon"></div>
             </div>
@@ -308,19 +260,22 @@
     const ribbon = document.getElementById('ribbon');
     const wrapper = document.getElementById('scaleWrapper');
 
-    // --- RESPONSIVIDADE PARA NOTION ---
     function resizeBook() {
-        const baseWidth = 520; // Espaço que o livro precisa para girar sem cortar
-        const baseHeight = 520;
+        // Reduzi a largura de referência para o livro ocupar mais espaço horizontal
+        const refWidth = 380; 
+        const refHeight = 450;
         
         const winW = window.innerWidth;
         const winH = window.innerHeight;
         
-        // Calcula a escala baseada na menor dimensão disponível
-        currentScale = Math.min(winW / baseWidth, winH / baseHeight);
+        currentScale = Math.min(winW / refWidth, winH / refHeight);
         
-        // Trava um limite máximo para não perder qualidade
-        if (currentScale > 1.1) currentScale = 1.1;
+        // No celular, permitimos que ele fique um pouco maior
+        if (winW < 500 && currentScale > 0.8) {
+            currentScale = winW / 340; 
+        }
+
+        if (currentScale > 1.2) currentScale = 1.2;
         
         wrapper.style.transform = `scale(${currentScale})`;
     }
@@ -350,7 +305,7 @@
         book.classList.remove('open');
     }
 
-    // --- LÓGICA DA FITA (RIBBON) ---
+    // Lógica da Fita
     let startY = 0;
     let isPulling = false;
     const baseRibbonHeight = 380;
@@ -365,14 +320,12 @@
     const pull = (e) => {
         if (!isPulling) return;
         let currentY = (e.touches ? e.touches[0].clientY : e.clientY);
-        
-        // Ajusta o delta com base na escala atual para manter a sensibilidade correta
         let deltaY = (currentY - startY) / currentScale; 
 
         if (deltaY > 0) {
-            let move = Math.min(deltaY, 100);
+            let move = Math.min(deltaY, 80);
             ribbon.style.height = `${baseRibbonHeight + move}px`;
-            if (deltaY > 70) {
+            if (deltaY > 60) {
                 isPulling = false;
                 sortear();
             }
@@ -396,7 +349,7 @@
 
     function sortear() {
         sorteando = true;
-        ribbon.style.height = `${baseRibbonHeight + 40}px`;
+        ribbon.style.height = `${baseRibbonHeight + 30}px`;
         const t = document.getElementById('obra-titulo');
         const s = document.getElementById('obra-sinopse');
         let i = 0;
@@ -405,12 +358,11 @@
             t.innerText = random.titulo;
             s.innerText = "...";
             i++;
-            if (i > 8) {
+            if (i > 6) {
                 clearInterval(interval);
                 carregarObraAleatoria();
                 sorteando = false;
                 ribbon.style.height = `${baseRibbonHeight}px`;
-                ribbon.classList.remove('pulling');
             }
         }, 100);
     }
