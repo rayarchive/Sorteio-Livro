@@ -2,17 +2,17 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
 
 <style>
     :root {
         /* CORES */
-        --capa-base: #151515; /* Fundo escuro */
-        --prata: #e0e0e0; /* Prata claro para ornamentos */
-        --papel: #fdf6e3; /* Cor de papel envelhecido */
-        --fita: #8b0000; /* Vermelho escuro para a fita */
+        --capa-base: #151515;
+        --prata: #e0e0e0;
+        --papel: #fdf6e3;
+        --fita: #8b0000;
         
         /* ASSETS EXTERNOS */
         --leather-tex: url('https://www.transparenttextures.com/patterns/dark-leather.png');
@@ -25,18 +25,30 @@
         align-items: center;
         min-height: 100vh;
         margin: 0;
-        background: transparent; /* Fundo transparente para o Notion */
+        padding: 0;
+        background: transparent; /* Transparente para Notion */
         font-family: 'Georgia', serif;
-        overflow: hidden;
+        overflow: hidden; /* Evita barras de rolagem indesejadas */
+    }
+
+    /* O container que será escalado */
+    .scale-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform-origin: center center;
+        /* A transição suave evita "pulos" quando redimensiona a janela */
+        transition: transform 0.1s linear; 
     }
 
     .viewport {
-        width: 450px; /* Largura aumentada para acomodar a rotação do livro grosso */
-        height: 450px;
+        width: 500px; /* Base fixa para o cálculo 3D */
+        height: 500px;
         perspective: 1500px;
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative;
     }
 
     .book {
@@ -45,18 +57,18 @@
         position: relative;
         transform-style: preserve-3d;
         transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        transform: rotateY(-20deg); /* Ângulo inicial fechado */
+        transform: rotateY(-20deg);
     }
 
     .book.open {
-        transform: rotateY(0deg) translateX(55px); /* Posição quando aberto */
+        transform: rotateY(0deg) translateX(55px);
     }
 
     /* --- LOMBADA --- */
     .spine {
         position: absolute;
         left: -24px; top: 0;
-        width: 26px; /* Espessura da lombada */
+        width: 26px;
         height: 100%;
         background: var(--capa-base);
         background-image: var(--leather-tex);
@@ -65,10 +77,10 @@
         box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
     }
 
-    /* --- CONTRACAPA (FUNDO DO LIVRO) --- */
+    /* --- CONTRACAPA --- */
     .book-back {
         position: absolute;
-        width: 104.5%; /* Ligeiramente mais largo para a borda */
+        width: 104.5%;
         height: 100%;
         background: var(--capa-base);
         background-image: var(--leather-tex);
@@ -87,14 +99,11 @@
         transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
         transform-style: preserve-3d;
-        /* CORREÇÃO DO BUG: Aumento do delay ao fechar para 0.9s.
-           Isso garante que a capa só feche depois que todas as páginas pararam de se mover. */
         transition-delay: 0.8s; 
     }
 
     .book.open .cover {
-        transform: rotateY(-155deg); /* Ângulo de abertura */
-        /* Ao abrir, o delay é zero para ser imediato */
+        transform: rotateY(-155deg);
         transition-delay: 0s; 
     }
 
@@ -102,19 +111,17 @@
     .front-face-art {
         position: absolute;
         top:0; left:0; width: 100%; height: 100%;
-        /* Gradiente para dar profundidade ao couro */
         background-color: var(--capa-base);
         background-image: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.4) 100%), var(--leather-tex);
         border-radius: 0 5px 5px 0;
         display: flex;
         justify-content: center;
-        align-items: flex-start; /* Alinha o conteúdo ao topo */
+        align-items: flex-start;
         backface-visibility: hidden;
         z-index: 2;
         box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), inset -2px -2px 5px rgba(0,0,0,0.5);
     }
 
-    /* Vinco lateral da capa */
     .spine-groove {
         position: absolute;
         left: 15px; top: 0; bottom: 0; width: 4px;
@@ -133,30 +140,19 @@
         background-repeat: no-repeat;
         pointer-events: none;
         z-index: 10;
-        /* Filtro para dar brilho prateado e sombra */
         filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.8)) brightness(1.2);
     }
-    /* Topo Direito */
-    .co-tr {
-        top: -1px; 
-        right: -1px;
-        transform: rotate(90deg); 
-    }
-    /* Baixo Direito (Invertida) */
-    .co-br {
-        bottom: -1px; 
-        right: -1px;
-        transform: rotate(90deg) scaleX(-1); 
-    }
+    .co-tr { top: -1px; right: -1px; transform: rotate(90deg); }
+    .co-br { bottom: -1px; right: -1px; transform: rotate(90deg) scaleX(-1); }
 
-    /* --- CONTEÚDO DO TÍTULO --- */
+    /* --- TÍTULO --- */
     .cover-content {
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 70%;
         margin-left: 15px;
-        margin-top: 50px; /* Controla a altura do título */
+        margin-top: 50px;
     }
 
     .front-face-art h1 {
@@ -170,38 +166,30 @@
         text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
     }
 
-    /* Divisores (Imagem externa) */
     .divider {
         width: 160px; height: 20px;
         background-image: url('https://i.imgur.com/F0LHG3G.png');
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        filter: brightness(1.2) grayscale(1); /* Ajuste de cor para prata */
+        filter: brightness(1.2) grayscale(1);
         opacity: 0.9;
     }
-    .divider-bottom {
-        transform: scaleY(-1); /* Inverte o de baixo */
-        margin-top: -5px;
-    }
-    .divider-top {
-        margin-bottom: -5px;
-    }
+    .divider-bottom { transform: scaleY(-1); margin-top: -5px; }
+    .divider-top { margin-bottom: -5px; }
 
-    /* --- PÁGINAS ANIMADAS (As 6 folhas) --- */
+    /* --- PÁGINAS --- */
     .turning-page {
         position: absolute;
         width: 250px; height: 350px;
         top: 5px; left: 5px;
         background: var(--papel);
         transform-origin: left;
-        /* Curva de animação suave e longa */
         transition: transform 1.2s cubic-bezier(0.15, 0, 0.15, 1);
         border-radius: 0 4px 4px 0;
-        transform-style: preserve-3d; /* Importante para evitar bugs visuais */
+        transform-style: preserve-3d;
     }
 
-    /* Delays e Z-Index para o fechamento (Ordem inversa) */
     .p1 { transition-delay: 0.6s; z-index: 40; }
     .p2 { transition-delay: 0.5s; z-index: 39; }
     .p3 { transition-delay: 0.4s; z-index: 38; }
@@ -209,7 +197,6 @@
     .p5 { transition-delay: 0.2s; z-index: 36; }
     .p6 { transition-delay: 0.1s; z-index: 35; }
 
-    /* Configuração ao ABRIR (Delays em cascata e ângulos) */
     .book.open .p1 { transform: rotateY(-150deg); transition-delay: 0.1s; }
     .book.open .p2 { transform: rotateY(-147deg); transition-delay: 0.2s; }
     .book.open .p3 { transform: rotateY(-144deg); transition-delay: 0.3s; }
@@ -217,7 +204,7 @@
     .book.open .p5 { transform: rotateY(-138deg); transition-delay: 0.5s; }
     .book.open .p6 { transform: rotateY(-135deg); transition-delay: 0.6s; }
 
-    /* --- BLOCO DE PÁGINAS FIXO (Lado Direito) --- */
+    /* --- PÁGINA FIXA (Direita) --- */
     .right-stack {
         position: absolute;
         width: 250px; height: 350px;
@@ -230,7 +217,6 @@
         padding: 30px 25px 30px 45px;
         box-sizing: border-box;
         text-align: center;
-        /* Efeito de volume com sombras alternadas */
         box-shadow: 
             1px 0 0 #d1c9b8, 2px 0 0 #fdf6e3, 
             3px 0 0 #d1c9b8, 4px 0 0 #fdf6e3,
@@ -240,7 +226,7 @@
             11px 0 0 #d1c9b8, 12px 0 15px rgba(0,0,0,0.3);
     }
 
-    /* --- FITA DE MARCAÇÃO --- */
+    /* --- FITA --- */
     .ribbon-container {
         position: absolute;
         top: 4px; left: 15px;
@@ -256,13 +242,12 @@
         box-shadow: 1px 1px 4px rgba(0,0,0,0.3);
         transition: top 0.6s ease, height 0.2s ease;
         pointer-events: auto; cursor: grab;
-        /* Recorte da ponta da fita em V sutil */
         clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 97%, 0 100%);
     }
     .book.open .ribbon { top: 0; }
     .ribbon.pulling { cursor: grabbing; transition: none; }
 
-    /* Estilos do texto interno */
+    /* TEXTO INTERNO */
     #obra-titulo { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: #111; }
     #obra-sinopse { font-size: 0.85rem; color: #444; font-style: italic; line-height: 1.4; }
     #obra-link { margin-top: 15px; color: var(--fita); text-decoration: none; font-weight: bold; border-bottom: 1px solid; font-size: 0.85rem; display: inline-block; cursor: pointer;}
@@ -270,40 +255,42 @@
 </head>
 <body>
 
-<div class="viewport">
-    <div class="book" id="book">
-        <div class="spine"></div>
-        <div class="book-back"></div>
+<div class="scale-wrapper" id="scaleWrapper">
+    <div class="viewport">
+        <div class="book" id="book">
+            <div class="spine"></div>
+            <div class="book-back"></div>
 
-        <div class="cover" onclick="toggleBook()">
-            <div class="front-face-art">
-                <div class="spine-groove"></div>
-                <div class="corner-ornament co-tr"></div>
-                <div class="corner-ornament co-br"></div>
-                
-                <div class="cover-content">
-                    <div class="divider divider-top"></div>
-                    <h1>Mana i entulë<br>nómë?</h1>
-                    <div class="divider divider-bottom"></div>
+            <div class="cover" onclick="toggleBook()">
+                <div class="front-face-art">
+                    <div class="spine-groove"></div>
+                    <div class="corner-ornament co-tr"></div>
+                    <div class="corner-ornament co-br"></div>
+                    
+                    <div class="cover-content">
+                        <div class="divider divider-top"></div>
+                        <h1>Mana i entulë<br>nómë?</h1>
+                        <div class="divider divider-bottom"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="turning-page p1" onclick="closeBook()"></div>
-        <div class="turning-page p2" onclick="closeBook()"></div>
-        <div class="turning-page p3" onclick="closeBook()"></div>
-        <div class="turning-page p4" onclick="closeBook()"></div>
-        <div class="turning-page p5" onclick="closeBook()"></div>
-        <div class="turning-page p6" onclick="closeBook()"></div>
+            <div class="turning-page p1" onclick="closeBook()"></div>
+            <div class="turning-page p2" onclick="closeBook()"></div>
+            <div class="turning-page p3" onclick="closeBook()"></div>
+            <div class="turning-page p4" onclick="closeBook()"></div>
+            <div class="turning-page p5" onclick="closeBook()"></div>
+            <div class="turning-page p6" onclick="closeBook()"></div>
 
-        <div class="right-stack">
-            <div id="obra-titulo"></div>
-            <div id="obra-sinopse"></div>
-            <a id="obra-link" target="_blank">Ler Obra →</a>
-        </div>
+            <div class="right-stack">
+                <div id="obra-titulo"></div>
+                <div id="obra-sinopse"></div>
+                <a id="obra-link" target="_blank">Ler Obra →</a>
+            </div>
 
-        <div class="ribbon-container">
-            <div class="ribbon" id="ribbon"></div>
+            <div class="ribbon-container">
+                <div class="ribbon" id="ribbon"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -320,6 +307,36 @@
     let sorteando = false;
     const book = document.getElementById('book');
     const ribbon = document.getElementById('ribbon');
+
+    // --- NOVA FUNÇÃO DE RESPONSIVIDADE ---
+    // Isso calcula o tamanho da tela do Notion e ajusta o zoom do livro
+    function resizeBook() {
+        const wrapper = document.getElementById('scaleWrapper');
+        const viewportBase = 520; // Tamanho ideal que o livro precisa
+        
+        // Pega a largura e altura disponíveis na janela do Notion
+        const availableWidth = window.innerWidth;
+        const availableHeight = window.innerHeight;
+        
+        // Calcula a escala para caber sem cortar
+        let scale = Math.min(
+            availableWidth / viewportBase, 
+            availableHeight / viewportBase
+        );
+        
+        // Limita o zoom máximo a 1 (não estica se a tela for gigante)
+        // e mínimo a 0.5 (para não ficar invisível)
+        if (scale > 1.2) scale = 1.2;
+        
+        // Aplica a escala
+        wrapper.style.transform = `scale(${scale})`;
+    }
+
+    // Ouve quando a janela muda de tamanho
+    window.addEventListener('resize', resizeBook);
+    // Chama uma vez ao carregar
+    window.addEventListener('load', resizeBook);
+    // --- FIM DA RESPONSIVIDADE ---
 
     function carregarObraAleatoria() {
         const random = obras[Math.floor(Math.random() * obras.length)];
@@ -365,7 +382,14 @@
     function pull(e) {
         if (!isPulling) return;
         let currentY = (e.touches ? e.touches[0].clientY : e.clientY);
-        let deltaY = currentY - startY;
+        
+        // Correção para o pull sentir a escala (senão fica muito rápido em telas pequenas)
+        // Tentamos pegar a escala atual do wrapper, se não, assume 1
+        const wrapper = document.getElementById('scaleWrapper');
+        const currentScale = new WebKitCSSMatrix(window.getComputedStyle(wrapper).transform).a || 1;
+
+        let deltaY = (currentY - startY) / currentScale; // Ajusta a sensibilidade
+
         if (deltaY > 0) {
             let move = Math.min(deltaY, 100);
             ribbon.style.height = `${baseRibbonHeight + move}px`;
