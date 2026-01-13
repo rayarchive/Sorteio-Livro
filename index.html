@@ -1,261 +1,259 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
 
-<style>
-    :root {
-        /* CORES */
-        --capa-base: #151515;
-        --prata: #e0e0e0;
-        --papel: #fdf6e3;
-        --fita: #8b0000;
-        
-        /* ASSETS EXTERNOS */
-        --leather-tex: url('https://www.transparenttextures.com/patterns/dark-leather.png');
-        --corner-url: url('https://i.imgur.com/eKnNgYK.png');
-    }
+    <style>
+        :root {
+            --capa-base: #151515;
+            --prata: #e0e0e0;
+            --papel: #fdf6e3;
+            --fita: #8b0000;
+            --leather-tex: url('https://www.transparenttextures.com/patterns/dark-leather.png');
+            --corner-url: url('https://i.imgur.com/eKnNgYK.png');
+        }
 
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-        background: transparent; /* Transparente para Notion */
-        font-family: 'Georgia', serif;
-        overflow: hidden; /* Evita barras de rolagem indesejadas */
-    }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent; 
+            font-family: 'Georgia', serif;
+            overflow: hidden; /* Importante para não bugar o scroll do Notion */
+        }
 
-    /* O container que será escalado */
-    .scale-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transform-origin: center center;
-        /* A transição suave evita "pulos" quando redimensiona a janela */
-        transition: transform 0.1s linear; 
-    }
+        /* Container principal que gerencia a escala */
+        #scaleWrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 500px; /* Largura base fixa para o cálculo */
+            height: 500px; /* Altura base fixa para o cálculo */
+            transform-origin: center center;
+            transition: transform 0.2s ease-out;
+            will-change: transform;
+        }
 
-    .viewport {
-        width: 500px; /* Base fixa para o cálculo 3D */
-        height: 500px;
-        perspective: 1500px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-    }
+        .viewport {
+            width: 100%;
+            height: 100%;
+            perspective: 1500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
 
-    .book {
-        width: 260px;
-        height: 360px;
-        position: relative;
-        transform-style: preserve-3d;
-        transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        transform: rotateY(-20deg);
-    }
+        .book {
+            width: 260px;
+            height: 360px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotateY(-20deg);
+        }
 
-    .book.open {
-        transform: rotateY(0deg) translateX(55px);
-    }
+        .book.open {
+            transform: rotateY(0deg) translateX(55px);
+        }
 
-    /* --- LOMBADA --- */
-    .spine {
-        position: absolute;
-        left: -24px; top: 0;
-        width: 26px;
-        height: 100%;
-        background: var(--capa-base);
-        background-image: var(--leather-tex);
-        transform: rotateY(-90deg);
-        transform-origin: right;
-        box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
-    }
+        /* --- LOMBADA --- */
+        .spine {
+            position: absolute;
+            left: -24px; top: 0;
+            width: 26px;
+            height: 100%;
+            background: var(--capa-base);
+            background-image: var(--leather-tex);
+            transform: rotateY(-90deg);
+            transform-origin: right;
+            box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
+        }
 
-    /* --- CONTRACAPA --- */
-    .book-back {
-        position: absolute;
-        width: 104.5%;
-        height: 100%;
-        background: var(--capa-base);
-        background-image: var(--leather-tex);
-        border-radius: 0 5px 5px 0;
-        transform: translateZ(-10px); 
-    }
+        /* --- CONTRACAPA --- */
+        .book-back {
+            position: absolute;
+            width: 104.5%;
+            height: 100%;
+            background: var(--capa-base);
+            background-image: var(--leather-tex);
+            border-radius: 0 5px 5px 0;
+            transform: translateZ(-10px); 
+        }
 
-    /* --- CAPA FRONTAL --- */
-    .cover {
-        position: absolute;
-        width: 100%; height: 100%;
-        background-color: var(--capa-base);
-        border-radius: 0 5px 5px 0;
-        z-index: 100;
-        transform-origin: left;
-        transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-        transform-style: preserve-3d;
-        transition-delay: 0.8s; 
-    }
+        /* --- CAPA FRONTAL --- */
+        .cover {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-color: var(--capa-base);
+            border-radius: 0 5px 5px 0;
+            z-index: 100;
+            transform-origin: left;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition-delay: 0.8s; 
+        }
 
-    .book.open .cover {
-        transform: rotateY(-155deg);
-        transition-delay: 0s; 
-    }
+        .book.open .cover {
+            transform: rotateY(-155deg);
+            transition-delay: 0s; 
+        }
 
-    /* --- ARTE DA CAPA --- */
-    .front-face-art {
-        position: absolute;
-        top:0; left:0; width: 100%; height: 100%;
-        background-color: var(--capa-base);
-        background-image: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.4) 100%), var(--leather-tex);
-        border-radius: 0 5px 5px 0;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        backface-visibility: hidden;
-        z-index: 2;
-        box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), inset -2px -2px 5px rgba(0,0,0,0.5);
-    }
+        .front-face-art {
+            position: absolute;
+            top:0; left:0; width: 100%; height: 100%;
+            background-color: var(--capa-base);
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.4) 100%), var(--leather-tex);
+            border-radius: 0 5px 5px 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            backface-visibility: hidden;
+            z-index: 2;
+            box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), inset -2px -2px 5px rgba(0,0,0,0.5);
+        }
 
-    .spine-groove {
-        position: absolute;
-        left: 15px; top: 0; bottom: 0; width: 4px;
-        border-left: 1px solid rgba(0,0,0,0.6);
-        border-right: 1px solid rgba(255,255,255,0.1);
-        background: rgba(0,0,0,0.2);
-    }
+        .spine-groove {
+            position: absolute;
+            left: 15px; top: 0; bottom: 0; width: 4px;
+            border-left: 1px solid rgba(0,0,0,0.6);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2);
+        }
 
-    /* --- CANTONEIRAS --- */
-    .corner-ornament {
-        position: absolute;
-        width: 70px; 
-        height: 70px;
-        background-image: var(--corner-url);
-        background-size: contain;
-        background-repeat: no-repeat;
-        pointer-events: none;
-        z-index: 10;
-        filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.8)) brightness(1.2);
-    }
-    .co-tr { top: -1px; right: -1px; transform: rotate(90deg); }
-    .co-br { bottom: -1px; right: -1px; transform: rotate(90deg) scaleX(-1); }
+        .corner-ornament {
+            position: absolute;
+            width: 70px; 
+            height: 70px;
+            background-image: var(--corner-url);
+            background-size: contain;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            z-index: 10;
+            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.8)) brightness(1.2);
+        }
+        .co-tr { top: -1px; right: -1px; transform: rotate(90deg); }
+        .co-br { bottom: -1px; right: -1px; transform: rotate(90deg) scaleX(-1); }
 
-    /* --- TÍTULO --- */
-    .cover-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 70%;
-        margin-left: 15px;
-        margin-top: 50px;
-    }
+        .cover-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70%;
+            margin-left: 15px;
+            margin-top: 50px;
+        }
 
-    .front-face-art h1 {
-        font-family: 'UnifrakturMaguntia', cursive;
-        color: var(--prata);
-        font-size: 1.7rem;
-        text-align: center;
-        font-weight: normal;
-        margin: 15px 0;
-        line-height: 1.1;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-    }
+        .front-face-art h1 {
+            font-family: 'UnifrakturMaguntia', cursive;
+            color: var(--prata);
+            font-size: 1.7rem;
+            text-align: center;
+            font-weight: normal;
+            margin: 15px 0;
+            line-height: 1.1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+        }
 
-    .divider {
-        width: 160px; height: 20px;
-        background-image: url('https://i.imgur.com/F0LHG3G.png');
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-        filter: brightness(1.2) grayscale(1);
-        opacity: 0.9;
-    }
-    .divider-bottom { transform: scaleY(-1); margin-top: -5px; }
-    .divider-top { margin-bottom: -5px; }
+        .divider {
+            width: 160px; height: 20px;
+            background-image: url('https://i.imgur.com/F0LHG3G.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: brightness(1.2) grayscale(1);
+            opacity: 0.9;
+        }
+        .divider-bottom { transform: scaleY(-1); margin-top: -5px; }
+        .divider-top { margin-bottom: -5px; }
 
-    /* --- PÁGINAS --- */
-    .turning-page {
-        position: absolute;
-        width: 250px; height: 350px;
-        top: 5px; left: 5px;
-        background: var(--papel);
-        transform-origin: left;
-        transition: transform 1.2s cubic-bezier(0.15, 0, 0.15, 1);
-        border-radius: 0 4px 4px 0;
-        transform-style: preserve-3d;
-    }
+        /* --- PÁGINAS --- */
+        .turning-page {
+            position: absolute;
+            width: 250px; height: 350px;
+            top: 5px; left: 5px;
+            background: var(--papel);
+            transform-origin: left;
+            transition: transform 1.2s cubic-bezier(0.15, 0, 0.15, 1);
+            border-radius: 0 4px 4px 0;
+            transform-style: preserve-3d;
+        }
 
-    .p1 { transition-delay: 0.6s; z-index: 40; }
-    .p2 { transition-delay: 0.5s; z-index: 39; }
-    .p3 { transition-delay: 0.4s; z-index: 38; }
-    .p4 { transition-delay: 0.3s; z-index: 37; }
-    .p5 { transition-delay: 0.2s; z-index: 36; }
-    .p6 { transition-delay: 0.1s; z-index: 35; }
+        .p1 { transition-delay: 0.6s; z-index: 40; }
+        .p2 { transition-delay: 0.5s; z-index: 39; }
+        .p3 { transition-delay: 0.4s; z-index: 38; }
+        .p4 { transition-delay: 0.3s; z-index: 37; }
+        .p5 { transition-delay: 0.2s; z-index: 36; }
+        .p6 { transition-delay: 0.1s; z-index: 35; }
 
-    .book.open .p1 { transform: rotateY(-150deg); transition-delay: 0.1s; }
-    .book.open .p2 { transform: rotateY(-147deg); transition-delay: 0.2s; }
-    .book.open .p3 { transform: rotateY(-144deg); transition-delay: 0.3s; }
-    .book.open .p4 { transform: rotateY(-141deg); transition-delay: 0.4s; }
-    .book.open .p5 { transform: rotateY(-138deg); transition-delay: 0.5s; }
-    .book.open .p6 { transform: rotateY(-135deg); transition-delay: 0.6s; }
+        .book.open .p1 { transform: rotateY(-150deg); transition-delay: 0.1s; }
+        .book.open .p2 { transform: rotateY(-147deg); transition-delay: 0.2s; }
+        .book.open .p3 { transform: rotateY(-144deg); transition-delay: 0.3s; }
+        .book.open .p4 { transform: rotateY(-141deg); transition-delay: 0.4s; }
+        .book.open .p5 { transform: rotateY(-138deg); transition-delay: 0.5s; }
+        .book.open .p6 { transform: rotateY(-135deg); transition-delay: 0.6s; }
 
-    /* --- PÁGINA FIXA (Direita) --- */
-    .right-stack {
-        position: absolute;
-        width: 250px; height: 350px;
-        top: 5px; left: 5px;
-        background: var(--papel);
-        border-radius: 0 4px 4px 0;
-        z-index: 10;
-        display: flex; flex-direction: column;
-        justify-content: center; align-items: center;
-        padding: 30px 25px 30px 45px;
-        box-sizing: border-box;
-        text-align: center;
-        box-shadow: 
-            1px 0 0 #d1c9b8, 2px 0 0 #fdf6e3, 
-            3px 0 0 #d1c9b8, 4px 0 0 #fdf6e3,
-            5px 0 0 #d1c9b8, 6px 0 0 #fdf6e3, 
-            7px 0 0 #d1c9b8, 8px 0 0 #fdf6e3,
-            9px 0 0 #d1c9b8, 10px 0 0 #fdf6e3, 
-            11px 0 0 #d1c9b8, 12px 0 15px rgba(0,0,0,0.3);
-    }
+        /* --- PÁGINA FIXA (Direita) --- */
+        .right-stack {
+            position: absolute;
+            width: 250px; height: 350px;
+            top: 5px; left: 5px;
+            background: var(--papel);
+            border-radius: 0 4px 4px 0;
+            z-index: 10;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 30px 25px 30px 45px;
+            box-sizing: border-box;
+            text-align: center;
+            box-shadow: 
+                1px 0 0 #d1c9b8, 2px 0 0 #fdf6e3, 
+                3px 0 0 #d1c9b8, 4px 0 0 #fdf6e3,
+                5px 0 0 #d1c9b8, 6px 0 0 #fdf6e3, 
+                7px 0 0 #d1c9b8, 8px 0 0 #fdf6e3,
+                9px 0 0 #d1c9b8, 10px 0 0 #fdf6e3, 
+                11px 0 0 #d1c9b8, 12px 0 15px rgba(0,0,0,0.3);
+        }
 
-    /* --- FITA --- */
-    .ribbon-container {
-        position: absolute;
-        top: 4px; left: 15px;
-        width: 14px; height: 380px; 
-        overflow: hidden;
-        z-index: 60;
-        pointer-events: none;
-    }
-    .ribbon {
-        position: absolute; top: -380px; left: 0;
-        width: 100%; height: 100%;
-        background: var(--fita);
-        box-shadow: 1px 1px 4px rgba(0,0,0,0.3);
-        transition: top 0.6s ease, height 0.2s ease;
-        pointer-events: auto; cursor: grab;
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 97%, 0 100%);
-    }
-    .book.open .ribbon { top: 0; }
-    .ribbon.pulling { cursor: grabbing; transition: none; }
+        /* --- FITA --- */
+        .ribbon-container {
+            position: absolute;
+            top: 4px; left: 15px;
+            width: 14px; height: 380px; 
+            overflow: hidden;
+            z-index: 60;
+            pointer-events: none;
+        }
+        .ribbon {
+            position: absolute; top: -380px; left: 0;
+            width: 100%; height: 100%;
+            background: var(--fita);
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+            transition: top 0.6s ease;
+            pointer-events: auto; cursor: grab;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 97%, 0 100%);
+        }
+        .book.open .ribbon { top: 0; }
+        .ribbon.pulling { cursor: grabbing; transition: none; }
 
-    /* TEXTO INTERNO */
-    #obra-titulo { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: #111; }
-    #obra-sinopse { font-size: 0.85rem; color: #444; font-style: italic; line-height: 1.4; }
-    #obra-link { margin-top: 15px; color: var(--fita); text-decoration: none; font-weight: bold; border-bottom: 1px solid; font-size: 0.85rem; display: inline-block; cursor: pointer;}
-</style>
+        /* TEXTO INTERNO */
+        #obra-titulo { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: #111; }
+        #obra-sinopse { font-size: 0.85rem; color: #444; font-style: italic; line-height: 1.4; }
+        #obra-link { margin-top: 15px; color: var(--fita); text-decoration: none; font-weight: bold; border-bottom: 1px solid; font-size: 0.85rem; display: inline-block; cursor: pointer;}
+    </style>
 </head>
 <body>
 
-<div class="scale-wrapper" id="scaleWrapper">
+<div id="scaleWrapper">
     <div class="viewport">
         <div class="book" id="book">
             <div class="spine"></div>
@@ -297,46 +295,38 @@
 
 <script>
     const obras = [
-        { titulo: "Dom Casmurro", sinopse: "A dúvida sobre a traição de Capitu narrada por um Bentinho mergulhado no ciúme.", link: "https://www.notion.so/Backups-2e4d0c17411c80e08bb3dc587b82d17f" },
-        { titulo: "O Alienista", sinopse: "Uma sátira genial sobre a loucura e os limites da ciência em uma pequena cidade.", link: "https://www.notion.so/Backups-2e4d0c17411c80e08bb3dc587b82d17f" },
-        { titulo: "Memórias Póstumas", sinopse: "Um defunto autor conta sua vida com ironia, começando pelo seu próprio fim.", link: "https://www.notion.so/Backups-2e4d0c17411c80e08bb3dc587b82d17f" },
-        { titulo: "Iracema", sinopse: "A lenda da 'virgem dos lábios de mel', um símbolo do encontro entre povos no Brasil.", link: "https://www.notion.so/Backups-2e4d0c17411c80e08bb3dc587b82d17f" }
+        { titulo: "Dom Casmurro", sinopse: "A dúvida sobre a traição de Capitu narrada por um Bentinho mergulhado no ciúme.", link: "#" },
+        { titulo: "O Alienista", sinopse: "Uma sátira genial sobre a loucura e os limites da ciência em uma pequena cidade.", link: "#" },
+        { titulo: "Memórias Póstumas", sinopse: "Um defunto autor conta sua vida com ironia, começando pelo seu próprio fim.", link: "#" },
+        { titulo: "Iracema", sinopse: "A lenda da 'virgem dos lábios de mel', um símbolo do encontro entre povos no Brasil.", link: "#" }
     ];
 
     let aberto = false;
     let sorteando = false;
+    let currentScale = 1;
     const book = document.getElementById('book');
     const ribbon = document.getElementById('ribbon');
+    const wrapper = document.getElementById('scaleWrapper');
 
-    // --- NOVA FUNÇÃO DE RESPONSIVIDADE ---
-    // Isso calcula o tamanho da tela do Notion e ajusta o zoom do livro
+    // --- RESPONSIVIDADE PARA NOTION ---
     function resizeBook() {
-        const wrapper = document.getElementById('scaleWrapper');
-        const viewportBase = 520; // Tamanho ideal que o livro precisa
+        const baseWidth = 520; // Espaço que o livro precisa para girar sem cortar
+        const baseHeight = 520;
         
-        // Pega a largura e altura disponíveis na janela do Notion
-        const availableWidth = window.innerWidth;
-        const availableHeight = window.innerHeight;
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
         
-        // Calcula a escala para caber sem cortar
-        let scale = Math.min(
-            availableWidth / viewportBase, 
-            availableHeight / viewportBase
-        );
+        // Calcula a escala baseada na menor dimensão disponível
+        currentScale = Math.min(winW / baseWidth, winH / baseHeight);
         
-        // Limita o zoom máximo a 1 (não estica se a tela for gigante)
-        // e mínimo a 0.5 (para não ficar invisível)
-        if (scale > 1.2) scale = 1.2;
+        // Trava um limite máximo para não perder qualidade
+        if (currentScale > 1.1) currentScale = 1.1;
         
-        // Aplica a escala
-        wrapper.style.transform = `scale(${scale})`;
+        wrapper.style.transform = `scale(${currentScale})`;
     }
 
-    // Ouve quando a janela muda de tamanho
     window.addEventListener('resize', resizeBook);
-    // Chama uma vez ao carregar
     window.addEventListener('load', resizeBook);
-    // --- FIM DA RESPONSIVIDADE ---
 
     function carregarObraAleatoria() {
         const random = obras[Math.floor(Math.random() * obras.length)];
@@ -360,35 +350,24 @@
         book.classList.remove('open');
     }
 
-    // Lógica da Fita
+    // --- LÓGICA DA FITA (RIBBON) ---
     let startY = 0;
     let isPulling = false;
     const baseRibbonHeight = 380;
 
-    ribbon.addEventListener('mousedown', startPull);
-    document.addEventListener('mousemove', pull);
-    document.addEventListener('mouseup', endPull);
-    ribbon.addEventListener('touchstart', startPull, {passive: false});
-    document.addEventListener('touchmove', pull, {passive: false});
-    document.addEventListener('touchend', endPull);
-
-    function startPull(e) {
+    const startPull = (e) => {
         if (!aberto || sorteando) return;
         isPulling = true;
         startY = (e.touches ? e.touches[0].clientY : e.clientY);
         ribbon.classList.add('pulling');
-    }
+    };
 
-    function pull(e) {
+    const pull = (e) => {
         if (!isPulling) return;
         let currentY = (e.touches ? e.touches[0].clientY : e.clientY);
         
-        // Correção para o pull sentir a escala (senão fica muito rápido em telas pequenas)
-        // Tentamos pegar a escala atual do wrapper, se não, assume 1
-        const wrapper = document.getElementById('scaleWrapper');
-        const currentScale = new WebKitCSSMatrix(window.getComputedStyle(wrapper).transform).a || 1;
-
-        let deltaY = (currentY - startY) / currentScale; // Ajusta a sensibilidade
+        // Ajusta o delta com base na escala atual para manter a sensibilidade correta
+        let deltaY = (currentY - startY) / currentScale; 
 
         if (deltaY > 0) {
             let move = Math.min(deltaY, 100);
@@ -398,15 +377,22 @@
                 sortear();
             }
         }
-    }
+    };
 
-    function endPull() {
+    const endPull = () => {
         if (isPulling) {
             isPulling = false;
             ribbon.classList.remove('pulling');
             ribbon.style.height = `${baseRibbonHeight}px`;
         }
-    }
+    };
+
+    ribbon.addEventListener('mousedown', startPull);
+    document.addEventListener('mousemove', pull);
+    document.addEventListener('mouseup', endPull);
+    ribbon.addEventListener('touchstart', startPull, {passive: false});
+    document.addEventListener('touchmove', pull, {passive: false});
+    document.addEventListener('touchend', endPull);
 
     function sortear() {
         sorteando = true;
@@ -417,13 +403,14 @@
         const interval = setInterval(() => {
             let random = obras[Math.floor(Math.random() * obras.length)];
             t.innerText = random.titulo;
-            s.innerText = random.sinopse;
+            s.innerText = "...";
             i++;
             if (i > 8) {
                 clearInterval(interval);
                 carregarObraAleatoria();
                 sorteando = false;
                 ribbon.style.height = `${baseRibbonHeight}px`;
+                ribbon.classList.remove('pulling');
             }
         }, 100);
     }
